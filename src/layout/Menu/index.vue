@@ -92,20 +92,6 @@ const initMenusList = async () => {
           children: [],
           order: null
         }
-        // {
-        //   id: 115,
-        //   authName: '分类参数',
-        //   path: 'params',
-        //   children: [],
-        //   order: 2
-        // },
-        // {
-        //   id: 121,
-        //   authName: '商品分类',
-        //   path: 'categories',
-        //   children: [],
-        //   order: 3
-        // }
         ],
         order: 1
       }

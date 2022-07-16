@@ -1,7 +1,7 @@
-import request from './request'
+import service from './request'
 
 export const login = (data) => {
-    return request({
+    return service({
         url: '/user/login',
         method: 'POST',
         data

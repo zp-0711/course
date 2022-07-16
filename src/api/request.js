@@ -1,5 +1,4 @@
 import axios from 'axios'
-// import { ElMessage } from 'element-plus'
 import { diffTokenTime } from '@/utils/auth'
 import store from '@/store'
 const service = axios.create({
@@ -29,15 +28,5 @@ service.interceptors.response.use(
         // if (errno === 0) {
         return response.data
     }
-    //     } else {
-    //         ElMessage.error('响应失败')
-    //             return Promise.reject(new Error(errno))
-    //     }
-    // }
-    // (error) => {
-    //     console.log(error.response)
-    //     error.response && ElMessage.error(error.response.data)
-    //     return Promise.reject(new Error(error.response.data))
-    // }
 )
 export default service
