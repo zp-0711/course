@@ -156,8 +156,6 @@ const clearTable = () => {
       Sat: '',
       Sun: ''
     })
-  //    = [
-  // ]
 }
 </script>
 
