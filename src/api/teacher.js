@@ -6,7 +6,7 @@ export const getTeachers = () => {
         method: 'GET'
     })
 }
-export const getTeacherCourse = (id) => {
+export const getTeacherCourseById = (id) => {
     return service({
         url: `/arrange/teacher/${id}`,
         method: 'GET'

@@ -1,17 +1,17 @@
 <template>
   <div>
-    <el-select v-model="teachersList.teacherId" class="m-2" placeholder="教师名称" size="large" @change="queryCourse">
-      <el-option v-for="item in teachersList" :key="item.teacherId" :label="item.teacherName" :value="item.teacherId" />
+    <el-select v-model="teachersList.tid" class="m-2" placeholder="教师名称" size="large" @change="getCourseList">
+      <el-option v-for="item in teachersList" :key="item.tid" :label="item.tname" :value="item.tid" />
     </el-select>
-    <el-select v-model="courseList.courseId" placeholder="课程名称" size="large" clearable class="filter-item"
+    <el-select v-model="courseList.id" placeholder="课程名称" size="large" clearable class="filter-item"
       style="margin-left: 8px;width: 200px">
-      <el-option v-for="item in courseList" :key="item.courseId" :label="item.courseName" :value="item.courseId" />
+      <el-option v-for="item in courseList" :key="item.id" :label="item.name" :value="item.id" />
     </el-select>
-    <el-button type="primary" style="margin-left:10px" size="large" @click="queryStudents">查询</el-button>
+    <el-button type="primary" style="margin-left:10px" size="large" @click="getStudentsList">查询</el-button>
   </div>
   <div class="el_table">
     <el-card>
-      <el-table :data="studentsTable" border style="width: 100%" stripe>
+      <el-table :data="studentsList" border style="width: 100%" stripe>
         <el-table-column prop="bid" label="班级编号" width="180" />
         <el-table-column prop="major" label="专业" width="180" />
         <el-table-column prop="sid" label="学号" width="180" />
@@ -20,7 +20,7 @@
         <el-table-column label="重新赋分">
           <template #default="{ row }">
             <template v-if="row">
-              <el-input v-model="row.newScore" class="edit-input" size="large" max="100" />
+              <el-input v-model="row.score" class="edit-input" size="large" max="100" />
             </template>
           </template>
         </el-table-column>
@@ -34,61 +34,81 @@
 
 <script setup>
 import { reactive, ref } from 'vue'
-import { getStudentsScore, postSubmitScore } from '../../api/student'
-import { getTeacherCourse, getTeachers } from '../../api/teacher'
+import { getStudentsScoreByCourseId, postSubmitScore } from '../../api/student'
+import { getTeacherCourseById, getTeachers } from '../../api/teacher'
 import { ElMessage } from 'element-plus'
 
 const teachersList = ref([])
 const getTeacherList = async () => {
-  const { data } = await getTeachers()
-  // teachersList.push(list.data)
-  data.forEach(function (items) {
-    const rObj = {}
-    rObj.teacherId = items.tid
-    rObj.teacherName = items.tname
-    teachersList.value.push(rObj)
-  })
+  const { data, errno } = await getTeachers()
+  if (errno !== 0) {
+    ElMessage({
+      duration: 800,
+      center: true,
+      message: '查询教师列表失败',
+      type: 'warning'
+    })
+  } else {
+    teachersList.value.push(...data)
+  }
 }
 
 const courseList = ref([])
 
-const queryCourse = async (val) => {
+const getCourseList = async (val) => {
   courseList.value = []
-  const { data } = await getTeacherCourse(val)
-  data.forEach(function (items) {
-    const rObj = {}
-    rObj.courseName = items.course.cname
-    rObj.courseId = items._id
-    courseList.value.push(rObj)
-  })
-  console.log('所有课程信息', courseList)
-}
-
-const studentsTable = reactive([])
-
-const queryStudents = async () => {
-  // console.log('courseList.value.courseId', courseList.value.courseId)
-  studentsTable.splice(0, studentsTable.length)
-  if (courseList.value.courseId) {
-    const { data } = await getStudentsScore(courseList.value.courseId)
-    console.log('查询学生的分数信息', data)
-    data.forEach(function (items) {
-      const obj = {}
-      obj.sid = items.student.sid
-      obj.name = items.student.sname
-      obj.bid = items.class.bid
-      obj.major = items.class.major
-      obj.newScore = items.score
-      obj.id = items.id
-      studentsTable.push(obj)
-      console.log('studentsTable', studentsTable)
-    })
+  const { data, errno } = await getTeacherCourseById(val)
+  if (errno !== 0) {
     ElMessage({
       duration: 800,
       center: true,
-      message: '查询成功',
-      type: 'success'
+      message: '查询教师课程失败',
+      type: 'warning'
     })
+  } else {
+    data.forEach((items) => {
+      const rObj = {}
+      rObj.name = items.course.cname
+      rObj.id = items._id
+      courseList.value.push(rObj)
+    })
+    console.log('所有课程信息', courseList)
+  }
+}
+
+const studentsList = reactive([])
+
+const getStudentsList = async () => {
+  if (courseList.value.id) {
+    const { data, errno } = await getStudentsScoreByCourseId(courseList.value.id)
+    console.log('查询学生的分数信息', data)
+    if (errno !== 0) {
+      ElMessage({
+        duration: 800,
+        center: true,
+        message: '查询失败',
+        type: 'warning'
+      })
+    } else {
+      studentsList.splice(0, studentsList.length)
+      data.forEach(function (items) {
+        const obj = {}
+        obj.sid = items.student.sid
+        obj.name = items.student.sname
+        obj.bid = items.class.bid
+        obj.major = items.class.major
+        obj.score = items.score
+        obj.id = items.id
+        studentsList.push(obj)
+        console.log('studentsList', studentsList)
+      })
+      ElMessage({
+        duration: 800,
+        center: true,
+        message: '查询成功',
+        type: 'success'
+      })
+    }
   } else {
     ElMessage({
       duration: 800,
@@ -101,16 +121,16 @@ const queryStudents = async () => {
 
 const ScoreData = reactive([])
 const submitScore = async () => {
-  studentsTable.forEach((items) => {
+  studentsList.forEach((items) => {
     const obj = {}
     obj.sid = items.sid
-    obj.score = items.newScore
+    obj.score = items.score
     ScoreData.push(obj)
   })
-  const id = studentsTable[1].id
+  const id = studentsList[1].id
   console.log(id)
-  const result = await postSubmitScore(id, ScoreData)
-  if (result.errno !== 0) {
+  const { errno } = await postSubmitScore(id, ScoreData)
+  if (errno !== 0) {
     ElMessage({
       duration: 800,
       center: true,
@@ -137,6 +157,6 @@ getTeacherList()
 
 .button_submit {
   display: flex;
-  justify-content: end;
+  justify-content: flex-end;
 }
 </style>

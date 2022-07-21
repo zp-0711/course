@@ -24,25 +24,23 @@
 <script setup>
 import { reactive } from 'vue'
 import { getAllCourses } from '../../api/class'
-
-// 查询教师对应的课程
-// 获取列表
+import { ElMessage } from 'element-plus'
 const courseTableData = reactive([])
 const getList = async () => {
-  const { data } = await getAllCourses()
-  // data.forEach(function (obj) {
-  //   const rObj2 = {}
-  //   rObj2.cid = obj.cid
-  //   rObj2.cname = obj.cname
-  //   rObj2.xueshi = obj.xueshi
-  //   rObj2.xuefen = obj.xuefen
-  //   rObj2.createdAt = obj.createdAt
-  //   courseTableData.push(rObj2)
-  //   // console.log('courseTableData', courseTableData)
-  // })
-      courseTableData.push(data)
+  const { data, errno } = await getAllCourses()
+  if (errno !== 0) {
+    ElMessage({
+      duration: 800,
+      center: true,
+      message: '获取课程列表失败',
+      type: 'warning'
+    })
+  } else {
+    courseTableData.push(...data)
+    // console.log(courseTableData)
+  }
 }
-  getList()
+getList()
 const handleFilter = () => {
 }
 </script>

@@ -7,7 +7,7 @@ export const getStudents = (id) => {
     })
 }
 
-export const getStudentsScore = (id) => {
+export const getStudentsScoreByCourseId = (id) => {
     return service({
         url: `/score/${id}`,
         method: 'GET'
