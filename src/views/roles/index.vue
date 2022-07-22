@@ -88,11 +88,13 @@ const Schedule = reactive([
     Sun: ''
   }
 ])
-
+const allData = reactive([])
 const getSchedule = async () => {
   clearTable()
   if (teachersList.value.tid) {
     await getTeacherCourseById(teachersList.value.tid).then(res => {
+      allData.push(...res.data)
+      console.log('allData', allData)
       res.data.map(function (obj) {
         const arr = ['Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat', 'Sun']
         const { cname } = obj.course
@@ -117,16 +119,16 @@ const getSchedule = async () => {
   }
 }
 
-const goDetail = async (row, cloumn) => {
-  if (row[cloumn.property]) {
-    const { data } = await getTeacherCourseById(teachersList.value.tid)
-    const result = data.filter((element) => {
-      return (element.course.cname === (row[cloumn.property]).slice(0, (row[cloumn.property]).length - 5))
+const goDetail = async (row, column) => {
+  if (row[column.property]) {
+    const result = allData.filter((element) => {
+      return (element.course.cname === (row[column.property]).slice(0, (row[column.property]).length - 5))
     })
     router.push({
       path: '/orders',
       query: {
-        id: JSON.stringify(result[0]._id)
+        id: JSON.stringify(result[0]._id),
+        name: result[0].course.cname
       }
     })
   } else {

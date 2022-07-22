@@ -11,13 +11,10 @@
       <el-form-item prop="pwd">
         <svg-icon icon="pwd" class="svg-container"></svg-icon>
         <el-input v-model="form.pwd" :type="pwdType" show-password></el-input>
-        <svg-icon
-          :icon="pwdType === 'pwd' ? 'eye' : 'eye-open'"
-          @click="changeType"
-        ></svg-icon>
+        <svg-icon :icon="pwdType === 'pwd' ? 'eye' : 'eye-open'" @click="changeType"></svg-icon>
       </el-form-item>
       <el-button type="primary" class="login-button" @click="handleLogin">{{
-        $t('login.btnTitle')
+          $t('login.btnTitle')
       }}</el-button>
     </el-form>
   </div>
@@ -26,6 +23,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useStore } from 'vuex'
+import { ElMessage } from 'element-plus'
 const store = useStore()
 const form = ref({
   uid: '',
@@ -49,13 +47,31 @@ const rules = ref({
   ]
 })
 
+document.onkeydown = function () {
+  const key = window.event.keyCode
+  if (key === 13) {
+    handleLogin()
+  }
+}
+
 const formRef = ref(null)
 const handleLogin = () => {
   formRef.value.validate(async (valid) => {
     if (valid) {
       store.dispatch('app/login', form.value)
+       ElMessage({
+      duration: 800,
+      center: true,
+      message: '登录成功',
+      type: 'success'
+    })
     } else {
-      console.log('error submit!!')
+       ElMessage({
+      duration: 800,
+      center: true,
+      message: '用户名或密码错误',
+      type: 'warning'
+    })
       return false
     }
   })
@@ -114,6 +130,7 @@ $cursor: #fff;
         caret-color: $cursor;
       }
     }
+
     .login-button {
       width: 100%;
       box-sizing: border-box;

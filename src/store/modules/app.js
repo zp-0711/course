@@ -28,7 +28,7 @@ export default {
                     .then((res) => {
                         commit('setToken', res.data)
                         setTokenTime()
-                        router.replace('/')
+                        router.replace('/users')
                         resolve()
                     })
                     .catch((err) => {

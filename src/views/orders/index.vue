@@ -1,7 +1,7 @@
 <template>
-<div>
- <el-button type="primary" style="margin:10px 20px 0px 0px;" size="large" @click="goBack">返回</el-button>
- <span style="font-size:x-large">当前课程</span>
+<div style="display:flex;justify-content:space-between">
+  <span style="font-size:x-large">当前课程 : &nbsp;{{name}}</span>
+ <el-button type="primary"  @click="goBack">返回</el-button>
  </div>
   <div class="el_table">
     <el-card>
@@ -19,20 +19,20 @@
         </el-table-column>
       </el-table>
       <div class="button_submit">
-        <el-button type="primary" style="margin:10px 20px 0px 0px;" size="large" @click="submitScore">提交分数</el-button>
+        <el-button type="primary" style="margin:10px 5px 0px 0px;" size="large" @click="submitScore">提交分数</el-button>
       </div>
     </el-card>
   </div>
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import { getStudentsScoreByCourseId, postSubmitScore } from '../../api/student'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-
+const name = ref(router.currentRoute.value.query.name)
 const studentsList = reactive([])
 const getStudentsList = async () => {
    if (router.currentRoute.value.query.id) {
