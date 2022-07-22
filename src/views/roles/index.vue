@@ -33,16 +33,16 @@ const router = useRouter()
 const teachersList = ref([])
 const getTeacherList = async () => {
   const { data, errno } = await getTeachers()
-  if (errno !== 0) {
+  if (errno) {
     ElMessage({
       duration: 800,
       center: true,
       message: '查询教师列表失败',
       type: 'warning'
     })
-  } else {
-    teachersList.value.push(...data)
+    return
   }
+  teachersList.value = data
 }
 getTeacherList()
 
@@ -88,42 +88,45 @@ const Schedule = reactive([
     Sun: ''
   }
 ])
-const allData = reactive([])
+const allData = ref([])
 const getSchedule = async () => {
   clearTable()
+
   if (teachersList.value.tid) {
     await getTeacherCourseById(teachersList.value.tid).then(res => {
-      allData.push(...res.data)
-      console.log('allData', allData)
+      allData.value = res.data
+      console.log('222222', allData.value)
       res.data.map(function (obj) {
         const arr = ['Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat', 'Sun']
         const { cname } = obj.course
         const timeNum = obj.time_num
         const { bid } = obj.class
+
         timeNum.forEach(items => {
           const num1 = Math.floor(items / 7)
           const num2 = items % 7
           const str = arr[num2]
           Schedule[num1][str] = `${cname} ${bid}`
-          console.log('Schedule', Schedule)
         })
       })
     })
-  } else {
-    ElMessage({
-      duration: 800,
-      center: true,
-      message: '请先选择教师',
-      type: 'warning'
-    })
+    return
   }
+
+  ElMessage({
+    duration: 800,
+    center: true,
+    message: '请先选择教师',
+    type: 'warning'
+  })
 }
 
 const goDetail = async (row, column) => {
   if (row[column.property]) {
-    const result = allData.filter((element) => {
+    const result = allData.value.filter((element) => {
       return (element.course.cname === (row[column.property]).slice(0, (row[column.property]).length - 5))
     })
+    console.log(result)
     router.push({
       path: '/orders',
       query: {
@@ -131,14 +134,15 @@ const goDetail = async (row, column) => {
         name: result[0].course.cname
       }
     })
-  } else {
-    ElMessage({
-      duration: 800,
-      center: true,
-      message: '请不要选择空课程',
-      type: 'warning'
-    })
+    return
   }
+
+  ElMessage({
+    duration: 800,
+    center: true,
+    message: '请不要选择空课程',
+    type: 'warning'
+  })
 }
 
 // 清空 Schedule

@@ -1,8 +1,8 @@
 <template>
-<div style="display:flex;justify-content:space-between">
-  <span style="font-size:x-large">当前课程 : &nbsp;{{name}}</span>
- <el-button type="primary"  @click="goBack">返回</el-button>
- </div>
+  <div style="display:flex;justify-content:space-between">
+    <span style="font-size:x-large">当前课程 : &nbsp;{{ name }}</span>
+    <el-button type="primary" @click="goBack">返回</el-button>
+  </div>
   <div class="el_table">
     <el-card>
       <el-table :data="studentsList" border style="width: 100%" stripe>
@@ -35,73 +35,76 @@ const router = useRouter()
 const name = ref(router.currentRoute.value.query.name)
 const studentsList = reactive([])
 const getStudentsList = async () => {
-   if (router.currentRoute.value.query.id) {
-   const { data, errno } = await getStudentsScoreByCourseId(JSON.parse(router.currentRoute.value.query.id) || '')
-    if (errno !== 0) {
+  if (router.currentRoute.value.query.id) {
+    const { data, errno } = await getStudentsScoreByCourseId(JSON.parse(router.currentRoute.value.query.id) || '')
+    if (errno) {
       ElMessage({
         duration: 800,
         center: true,
         message: '查询失败',
         type: 'warning'
       })
-    } else {
-      studentsList.splice(0, studentsList.length)
-      data.forEach(function (items) {
-        const obj = {}
-        obj.sid = items.student.sid
-        obj.name = items.student.sname
-        obj.bid = items.class.bid
-        obj.major = items.class.major
-        obj.score = items.score
-        obj.id = items.id
-        studentsList.push(obj)
-        console.log('studentsList', studentsList)
-      })
-      ElMessage({
-        duration: 800,
-        center: true,
-        message: '查询成功',
-        type: 'success'
-      })
+      return
     }
-  } else {
+
+    studentsList.splice(0, studentsList.length)
+    data.forEach(function (items) {
+      studentsList.push({
+        sid: items.student.sid,
+        name: items.student.sname,
+        bid: items.class.bid,
+        major: items.class.major,
+        score: items.score,
+        id: items.id
+      })
+      console.log('studentsList', studentsList)
+    })
+
     ElMessage({
       duration: 800,
       center: true,
-      message: '请通过路由跳转',
-      type: 'warning'
+      message: '查询成功',
+      type: 'success'
     })
+    return
   }
+  ElMessage({
+    duration: 800,
+    center: true,
+    message: '请通过路由跳转',
+    type: 'warning'
+  })
 }
 
 getStudentsList()
 
-const ScoreData = reactive([])
+const ScoreData = ref([])
 const submitScore = async () => {
-  studentsList.forEach((items) => {
-    const obj = {}
-    obj.sid = items.sid
-    obj.score = items.score
-    ScoreData.push(obj)
+  ScoreData.value = studentsList.map((items) => {
+    return {
+    sid: items.sid,
+    score: items.score
+    }
   })
   const id = studentsList[1].id
-  console.log(id)
-  const { errno } = await postSubmitScore(id, ScoreData)
-  if (errno !== 0) {
+  const { errno } = await postSubmitScore(id, ScoreData.value)
+
+  if (errno) {
     ElMessage({
       duration: 800,
       center: true,
       message: '提交失败',
       type: 'warning'
     })
-  } else {
-    ElMessage({
-      duration: 800,
-      center: true,
-      message: '提交成功',
-      type: 'success'
-    })
+    return
   }
+
+  ElMessage({
+    duration: 800,
+    center: true,
+    message: '提交成功',
+    type: 'success'
+  })
 }
 
 const goBack = () => {

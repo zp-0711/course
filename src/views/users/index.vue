@@ -1,7 +1,4 @@
 <template>
-  <div>
-    <el-button type="primary" style="margin-left:10px" @click="handleFilter" size="large">获取课程列表</el-button>
-  </div>
   <div style="padding-top:15px">
     <el-card>
       <el-table :data="courseTableData" border style="width: 100%" stripe>
@@ -22,28 +19,24 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { ref } from 'vue'
 import { getAllCourses } from '../../api/class'
 import { ElMessage } from 'element-plus'
-const courseTableData = reactive([])
+const courseTableData = ref([])
 const getList = async () => {
   const { data, errno } = await getAllCourses()
-  if (errno !== 0) {
+
+  if (errno) {
     ElMessage({
       duration: 800,
       center: true,
       message: '获取课程列表失败',
       type: 'warning'
     })
-  } else {
-    courseTableData.push(...data)
-    // console.log(courseTableData)
+    return
   }
+
+  courseTableData.value = data
 }
 getList()
-const handleFilter = () => {
-}
 </script>
-
-<style lang="scss" scoped>
-</style>
