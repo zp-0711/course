@@ -1,4 +1,3 @@
-// import { TOKEN_TIME, TOKEN_TIME_VALUE } from './constant'
 const TOKEN_TIME = 'tokenTime'
 
 const TOKEN_TIME_VALUE = 1 * 60 * 60 * 1000

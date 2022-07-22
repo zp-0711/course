@@ -24,8 +24,6 @@ service.interceptors.request.use(
 
 service.interceptors.response.use(
     (response) => {
-        // const { errno } = response
-        // if (errno === 0) {
         return response.data
     }
 )

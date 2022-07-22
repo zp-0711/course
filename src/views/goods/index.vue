@@ -16,7 +16,6 @@
         <el-table-column prop="major" label="专业" width="180" />
         <el-table-column prop="sid" label="学号" width="180" />
         <el-table-column prop="name" label="学生姓名" width="180" />
-        <!-- <el-table-column prop="oldScore" label="分数" width="180" /> -->
         <el-table-column label="重新赋分">
           <template #default="{ row }">
             <template v-if="row">
@@ -120,6 +119,7 @@ const getStudentsList = async () => {
 }
 
 const ScoreData = reactive([])
+
 const submitScore = async () => {
   studentsList.forEach((items) => {
     const obj = {}

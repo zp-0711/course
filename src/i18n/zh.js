@@ -8,7 +8,7 @@ export default {
         goods: '教师评分',
         params: '分类参数',
         categories: '商品分类',
-        orders: '订单列表',
+        orders: '快捷评分',
         reports: '数据报表'
     },
     login: {
