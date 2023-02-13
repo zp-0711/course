@@ -57,7 +57,6 @@ const getStudentsList = async () => {
         score: items.score,
         id: items.id
       })
-      console.log('studentsList', studentsList)
     })
 
     ElMessage({

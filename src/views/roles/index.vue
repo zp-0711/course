@@ -123,15 +123,16 @@ const getSchedule = async () => {
 
 const goDetail = async (row, column) => {
   if (row[column.property]) {
-    const result = allData.value.filter((element) => {
+    const result = allData.value.find((element) => {
       return (element.course.cname === (row[column.property]).slice(0, (row[column.property]).length - 5))
     })
-    console.log(result)
+  console.log('全部数据', allData)
+  console.log('result', result)
     router.push({
       path: '/orders',
       query: {
-        id: JSON.stringify(result[0]._id),
-        name: result[0].course.cname
+        id: JSON.stringify(result._id),
+        name: result.course.cname
       }
     })
     return
